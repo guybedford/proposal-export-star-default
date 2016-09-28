@@ -73,7 +73,7 @@ export default from './a.js';
 where `a.js` and `b.js` are exactly as in the previous example.
 
 > The above syntax is based on the [export default from proposal](https://github.com/leebyron/ecmascript-export-default-from),
-although any method of setting the local default export directly would work here.
+although `export {default} from './a.js'` would work equivalently here.
 
 The inclusion of the explicit default export then avoids the previous ambiguous SyntaxError.
 
