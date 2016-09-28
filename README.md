@@ -1,4 +1,4 @@
-# ECMAScript Proposal: Removing default export exception for `export *`
+# ECMAScript Proposal: Include default export in `export * from 'module'`
 
 **Stage:** 0
 
