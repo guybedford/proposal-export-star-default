@@ -22,14 +22,16 @@ an internal private module, and have that exposed through `export *`.
 The biggest concern with including `default` in `export *` is how to handle collisions, but `export *`
 is [already designed to handle ambiguity well](#ambiguity).
 
-### Proposal
+## Proposal
 
 The proposal is to remove special-casing of `default` for `export *` in the current specification
 in order to ensure `export *` more closely resembles a spread conceptually and simplify the symmetry of the export syntaxes.
 
 See http://guybedford.github.io/proposal-export-star-default/ for the diff.
 
-### Ambiguity
+## Ambiguity
+
+### Collisions
 
 When two `export *` statements in a module resolve to the same export name, a SyntaxError is thrown during [instantiation](http://www.ecma-international.org/ecma-262/6.0/#sec-moduledeclarationinstantiation).
 
@@ -54,7 +56,7 @@ export * from './b.js'; // throws a SyntaxError
 
 The SyntaxError in the above ensures that collisions do not happen, avoiding ambiguity.
 
-### Resolving Ambiguity
+### Resolving Collisions
 
 In order to resolve the previous ambiguity, we can use the same process we do for
 other named exports, which is to rely on the fact that local exports always
