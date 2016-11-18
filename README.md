@@ -63,7 +63,7 @@ B.default
 
 _This breaks the the user intuition that `default` is a named export like any other._
 
-### 2. Creating a top-level index module
+### 2. Creating an index module
 
 A convention in NodeJS is to have an `index.js` which is the main entry point of the package.
 
@@ -102,8 +102,8 @@ where we know that the `index.js` module will then exactly match the internal mo
 
 ### 3. Dynamic wrapping
 
-The case for reexporting the defaut can also be extended to use cases where we want to dynamically
-generate a module wrapper exposing the same exports as another module, without knowing in advance its export names.
+The case for re-exporting the default can also be extended to use cases where we want to dynamically
+generate a module wrapper exposing the exports of another module, without knowing in advance its export names.
 
 Consider a use case such as an npm CDN, which allows shortcut URLs like `https://npmcdn.com/lodash`,
 which then expose a module at a full versioned URL like `https://npmcdn.com/lodash@4.17.2/index.js`.
@@ -121,8 +121,8 @@ export * from './lodash@4.17.2/index.js';
 export { default } from './lodash@4.17.2/index.js';
 ```
 
-_If we don't include the default export when it is needed, we may miss the `default`, and if do we include
-it when it isn't needed, we will get an error. This restriction has thus added a new static analysis
+_If we don't include the default export when it is needed we may miss the `default`, but if do we include
+it when it isn't needed we will get an error. This restriction has thus added a new static analysis
 concern to what would otherwise be a simple server response._
 
 ## Proposal
@@ -137,7 +137,7 @@ http://guybedford.github.io/proposal-export-star-default/
 
 ## Handling Ambiguity
 
-One concern with including `default` in `export *` is how to handle collisions, but `export *`
+One concern with including default in `export *` is how to handle collisions, but `export *`
 is already designed to handle ambiguity well - when two `export *` statements in a module resolve the
 same export name, a SyntaxError is thrown as in [15.2.1.16.4 12.d.ii)](https://tc39.github.io/ecma262/#sec-moduledeclarationinstantiation):
 
