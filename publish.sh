@@ -1,5 +1,5 @@
 #!/bin/sh -xe
-
+git checkout master
 ecmarkup spec/index.html index.next
 git checkout gh-pages
 mv index.next index.html
