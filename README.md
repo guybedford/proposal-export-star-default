@@ -16,7 +16,7 @@ the default export**.
 There are use cases though where it is useful to be able to have the `default` export defined within
 an internal private module, and have that exposed through `export *`.
 
-1. Symmetry with named exports
+### 1. Symmetry with named exports
 
     Consider a module X with both a named export and a default export that is re-exported through another module.
     If we explicitly list its export names when re-exporting them in `a.js`, we can import everything as expected.
@@ -59,7 +59,7 @@ an internal private module, and have that exposed through `export *`.
     // -> undefined
     ```
 
-2. Using a top-level exporting `index` module
+### 2. Using a top-level exporting `index` module
 
     A convention in NodeJS is to have an `index.js` which is the main entry point of the package.
 
@@ -94,7 +94,7 @@ an internal private module, and have that exposed through `export *`.
     module.exports = require('./lib/package.js');
 ```
 
-3. Dynamic wrapping
+### 3. Dynamic wrapping
 
     The case for blindly exporting the defaut can also be extended to use cases where we want to dynamically
     generate a module wrapper exposing the same exports as another module, without knowing in advance its named exports.
