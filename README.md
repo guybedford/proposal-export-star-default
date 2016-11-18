@@ -36,10 +36,10 @@ export { name, default } from './x.js';
 ```
 
 ```javascript
-import { name } from './a.js';
-import { default } from './a.js';
+import { name } from './reexport1.js';
+import { default } from './reexport1.js';
 
-import * as A from './a.js';
+import * as A from './reexport1.js';
 A.default;
 // -> 'default'
 ```
@@ -52,11 +52,11 @@ export * from './x.js';
 ```
 
 ```javascript
-import { name } from './b.js';
-import { default } from './b.js';
+import { name } from './reexport2.js';
+import { default } from './reexport2.js';
 // Syntax Error: 'default' is not exported
 
-import * as B from './b.js';
+import * as B from './reexport2.js';
 B.default
 // -> undefined
 ```
