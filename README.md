@@ -10,9 +10,6 @@
 
 ## Motivation
 
-`export * from 'module'` statements provide a way to package together many modules into
-a top-level entry-point.
-
 In the current specification, `export * from 'module'` will export all named exports, **except for
 the default export**.
 
