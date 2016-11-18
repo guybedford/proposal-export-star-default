@@ -18,121 +18,122 @@ an internal private module, and have that exposed through `export *`.
 
 ### 1. Symmetry with named exports
 
-  Consider a module X with both a named export and a default export that is re-exported through another module.
-  If we explicitly list its export names when re-exporting them, then we can import everything as expected.
-  But if we use `export *` the default export is not accessible.
+Consider a module X with both a named export and a default export that is re-exported through another module
+(reexport1.js and reexport2.js in this example). If we explicitly list its export names when re-exporting them,
+then we can import everything as expected. But if we use `export *` the default export is not accessible.
 
-  _This breaks the the user intuition that `default` is a named export like any other._
+x.js
+```javascript
+export default 'default';
+export let name = 'name';
+```
 
-  x.js
-  ```javascript
-  export default 'default';
-  export let name = 'name';
-  ```
+Re-exporting with explicit names:
 
-  a.js
-  ```javascript
-  export { name, default } from './x.js';
-  ```
+reexport1.js
+```javascript
+export { name, default } from './x.js';
+```
 
-  b.js
-  ```javascript
-  export * from './x.js';
-  ```
+```javascript
+import { name } from './a.js';
+import { default } from './a.js';
 
-  ```javascript
-  import { name } from './a.js';
-  import { default } from './a.js';
+import * as A from './a.js';
+A.default;
+// -> 'default'
+```
 
-  import * as A from './a.js';
-  A.default;
-  // -> 'default'
-  ```
+While if we use `export *` we get:
 
-  And yet if we try the same with `b.js`:
-  ```javascript
-  import { name } from './b.js';
-  import { default } from './b.js';
-  // Syntax Error: 'default' is not exported
+reexport2.js
+```javascript
+export * from './x.js';
+```
 
-  import * as B from './b.js';
-  B.default
-  // -> undefined
-  ```
+```javascript
+import { name } from './b.js';
+import { default } from './b.js';
+// Syntax Error: 'default' is not exported
 
+import * as B from './b.js';
+B.default
+// -> undefined
+```
 
-### 2. Using a top-level exporting `index` module
+_This breaks the the user intuition that `default` is a named export like any other._
 
-  A convention in NodeJS is to have an `index.js` which is the main entry point of the package.
+### 2. Creating a top-level index module
 
-  If we want to create this module using `export *` statements to expose modules from sub-folders, we
-  cannot export the default in this way:
+A convention in NodeJS is to have an `index.js` which is the main entry point of the package.
 
-  index.js
-  ```javascript
-  export * from './lib/package-core.js';
-  export let extraInfo = 'abc';
-  ```
+If we want to create this module using `export *` statements to expose modules from sub-folders, we
+cannot export the default in this way:
 
-  If `lib/package-core.js` contained a default export, we would not be exposing it.
+index.js
+```javascript
+export * from './lib/package-core.js';
+export let extraInfo = 'abc';
+```
 
-  We would need to explitly export the default with something like:
+If `lib/package-core.js` contained a default export, we would not be exposing it.
 
-  index.js
-  ```javascript
-  export * from './lib/package-core.js';
-  export { default } from './lib/package-core.js';
-  export let extraInfo = 'abc';
-  ```
+We would need to explitly export the default with something like:
 
-  The issue here is that if we were ever to remove the default export from
-  `lib/package-core.js`, we would then get a SyntaxError in `index.js` that the
-  default export does not exist anymore. The change of removing the default export
-  would need to be made in two separate places.
+index.js
+```javascript
+export * from './lib/package-core.js';
+export { default } from './lib/package-core.js';
+export let extraInfo = 'abc';
+```
 
-  The above pattern is also already widely seen in `index.js` modules on npm, of the form:
+_The issue here is that if we were ever to remove the default export from
+`lib/package-core.js`, we would then get a SyntaxError in `index.js` that the
+default export does not exist anymore. The change of removing the default export
+would need to be made in two separate places._
 
-  ```javascript
-  module.exports = require('./lib/package.js');
-  ```
+The above pattern is also already widely seen in `index.js` modules on npm, of the form:
+
+```javascript
+module.exports = require('./lib/package.js');
+```
 
 ### 3. Dynamic wrapping
 
-  The case for blindly exporting the defaut can also be extended to use cases where we want to dynamically
-  generate a module wrapper exposing the same exports as another module, without knowing in advance its named exports.
+The case for reexporting the defaut can also be extended to use cases where we want to dynamically
+generate a module wrapper exposing the same exports as another module, without knowing in advance its export names.
 
-  Consider a use case such as an npm CDN, which allows shortcut URLs like `https://npmcdn.com/lodash`,
-  which then expose a module at a full versioned URL like `https://npmcdn.com/lodash@4.17.2/index.js`.
+Consider a use case such as an npm CDN, which allows shortcut URLs like `https://npmcdn.com/lodash`,
+which then expose a module at a full versioned URL like `https://npmcdn.com/lodash@4.17.2/index.js`.
 
-  A dynamically generated module for `https://npmcdn.com/lodash` could look like:
+A dynamically generated module for `https://npmcdn.com/lodash` could look like:
 
-  ```javascript
-  export * from './lodash@4.17.2/index.js';
-  ```
+```javascript
+export * from './lodash@4.17.2/index.js';
+```
 
-  but if there was a default export we would have to provide a different response:
+but if there was a default export we would have to provide a different response:
 
-  ```javascript
-  export * from './lodash@4.17.2/index.js';
-  export { default } from './lodash@4.17.2/index.js';
-  ```
+```javascript
+export * from './lodash@4.17.2/index.js';
+export { default } from './lodash@4.17.2/index.js';
+```
 
-  If we don't include the default export when it is needed, we may miss the `default`, and if do we include
-  it when it isn't needed, we will get an error.
-
-  This restriction has thus added a new static analysis concern to what would otherwise be a simple server response.
+_If we don't include the default export when it is needed, we may miss the `default`, and if do we include
+it when it isn't needed, we will get an error. This restriction has thus added a new static analysis
+concern to what would otherwise be a simple server response._
 
 ## Proposal
 
 The proposal is to remove special-casing of `default` for `export *` in the current specification
-in order to simplify the symmetry of `export *` as well as to enable easier module wrapping.
+in order to simplify the symmetry of `export *` as well as to enable easier module wrapping use cases as described above.
 
-The change is backwards-compatible with the existing specification, disabling the syntax error for importing
+The change is backwards-compatible with the existing specification and results in disabling the syntax error for importing
 a default export through an `export *`, and making `default` available as a named export on the module namespace object for this case.
 
 http://guybedford.github.io/proposal-export-star-default/
 
-## Example: Handling Ambiguity
+## Handling Ambiguity
 
 One concern with including `default` in `export *` is how to handle collisions, but `export *`
 is already designed to handle ambiguity well - when two `export *` statements in a module resolve the
