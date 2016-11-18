@@ -98,6 +98,8 @@ The above pattern is also already widely seen in `index.js` modules on npm, of t
 module.exports = require('./lib/package.js');
 ```
 
+where we know that the `index.js` module will then exactly match the internal module.
+
 ### 3. Dynamic wrapping
 
 The case for reexporting the defaut can also be extended to use cases where we want to dynamically
