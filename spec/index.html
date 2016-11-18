@@ -58,8 +58,8 @@ contributors: Guy Bedford, Caridy Patiño
       1. Let _starNames_ be ? _requestedModule_.GetExportedNames(_exportStarSet_).
       1. For each element _n_ of _starNames_, do
         1. <del>If SameValue(_n_, `"default"`) is *false*, then</del>
-          1. If _n_ is not an element of _exportedNames_, then
-            1. Append _n_ to _exportedNames_.
+        1. If _n_ is not an element of _exportedNames_, then
+          1. Append _n_ to _exportedNames_.
     1. Return _exportedNames_.
   </emu-alg>
   <emu-note>
