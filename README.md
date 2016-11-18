@@ -19,9 +19,10 @@ an internal private module, and have that exposed through `export *`.
 ### 1. Symmetry with named exports
 
   Consider a module X with both a named export and a default export that is re-exported through another module.
-  If we explicitly list its export names when re-exporting them in `a.js`, we can import everything as expected.
-  But if we use export * in `b.js`, the default export is not accessible, breaking the user intuition that `default`
-  is a named export like any other.
+  If we explicitly list its export names when re-exporting them, then we can import everything as expected.
+  But if we use `export *` the default export is not accessible.
+
+  _This breaks the the user intuition that `default` is a named export like any other._
 
   x.js
   ```javascript
