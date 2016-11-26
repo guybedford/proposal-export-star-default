@@ -66,7 +66,7 @@ _This breaks the the user intuition that `default` is a named export like any ot
 
 ### 2. Creating an index module
 
-A convention in NodeJS is to have an `index.js` which is the main entry point of the package.
+In NodeJS it is a convention to have an `index.js` as the main entry point of the package.
 
 If we want to create this module using `export *` statements to expose modules from sub-folders, we
 cannot export the default in this way:
@@ -79,7 +79,7 @@ export let extraInfo = 'abc';
 
 If `lib/package-core.js` contained a default export, we would not be exposing it.
 
-We would need to explitly export the default with something like:
+We would need to explicitly export the default with:
 
 index.js
 ```javascript
@@ -87,6 +87,8 @@ export * from './lib/package-core.js';
 export { default } from './lib/package-core.js';
 export let extraInfo = 'abc';
 ```
+
+in order to ensure we get the expected entry point module value.
 
 _The issue here is that if we were ever to remove the default export from
 `lib/package-core.js`, we would then get a SyntaxError in `index.js` that the
@@ -99,7 +101,7 @@ The above pattern is also already widely seen in `index.js` modules on npm, of t
 module.exports = require('./lib/package.js');
 ```
 
-where we know that the `index.js` module will then exactly match the internal module.
+where we know that the `index.js` module will exactly match the internal module.
 
 ### 3. Dynamic wrapping
 
@@ -107,7 +109,7 @@ The case for re-exporting the default can also be extended to use cases where we
 generate a module wrapper exposing the exports of another module, without knowing in advance its export names.
 
 Consider a use case such as an npm CDN, which allows shortcut URLs like `https://npmcdn.com/lodash`,
-which then expose a module at a full versioned URL like `https://npmcdn.com/lodash@4.17.2/index.js`.
+which then exposes a module at a full versioned URL like `https://npmcdn.com/lodash@4.17.2/index.js`.
 
 A dynamically generated module for `https://npmcdn.com/lodash` could look like:
 
@@ -168,7 +170,7 @@ When we try to import `name` via
 
 we will get a SyntaxError that name is ambiguous.
 
-This conflict can be resolved though by explicitly selecting a module to export from
+This conflict can be resolved by explicitly indicating a module to export `name` from:
 
   z.js
   ```javascript
@@ -177,9 +179,9 @@ This conflict can be resolved though by explicitly selecting a module to export 
   export { name } from './x.js';
   ```
 
-Now when we import `name`, it is correctly resolved.
+Now when we import `name` from `z.js` it will be correctly resolved.
 
-With this spec change, the same ambiguity resolution process would apply to the default export:
+With this spec change the same ambiguity resolution process would apply to the default export:
 
   ```javascript
   import { default } from './z.js';
@@ -194,5 +196,4 @@ would throw a SyntaxError.
   export { default } from './x.js';
   ```
 
-would then resolve that SyntaxError by providing an explicit precedence, providing symmetry between handling conflicts between named exports
-and default exports via `export *`.
+would then resolve that SyntaxError by providing an explicit precedence, providing symmetry between handling conflicts between named exports and default exports via `export *`.
