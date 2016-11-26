@@ -18,9 +18,8 @@ an internal private module, and have that exposed through `export *`.
 
 ### 1. Symmetry with named exports
 
-Consider a module X with both a named export and a default export that is re-exported through another module
-(reexport1.js and reexport2.js in this example). If we explicitly list its export names when re-exporting them,
-then we can import everything as expected. But if we use `export *` the default export is not accessible.
+Consider a module X with both a named export and a default export that is re-exported through another module.
+We then re-export this module with explicit names in `reexport1.js` and with `export *` in `reexport2.js`:
 
 x.js
 ```javascript
@@ -28,12 +27,19 @@ export default 'default';
 export let name = 'name';
 ```
 
-Re-exporting with explicit names:
+Re-export variations:
 
 reexport1.js
 ```javascript
 export { name, default } from './x.js';
 ```
+
+reexport2.js
+```javascript
+export * from './x.js';
+```
+
+In the first variation, we can import the default as it was exported explicitly:
 
 ```javascript
 import { name } from './reexport1.js';
@@ -44,12 +50,7 @@ A.default;
 // -> 'default'
 ```
 
-While if we use `export *` we get:
-
-reexport2.js
-```javascript
-export * from './x.js';
-```
+while in the `export *` re-export variation, the default is not available:
 
 ```javascript
 import { name } from './reexport2.js';
